@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: rtb
+  name: details-service-app
+  labels:
+    app: details-service-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app : details-service-app
+  template:
+    metadata:
+      labels:
+        app: details-service-app
+    spec:
+      containers:
+        - name: details-service-app
+          image: mamoonroshangar/details-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9003
+          env: # Setting Environmental Variables
+            - name: DB_HOST   # Setting Database host address from configMap
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: host
+
+            - name: DB_NAME  # Setting Database name from configMap
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: dbName
+
+            - name: DB_USERNAME  # Setting Database username from Secret
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secrets
+                  key: username
+
+            - name: DB_PASSWORD # Setting Database password from Secret
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secrets
+                  key: password
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: rtb
+  name: details-service-svc
+spec:
+  selector:
+    app: details-service-app
+  ports:
+    - port: 80
+      targetPort: 9003
