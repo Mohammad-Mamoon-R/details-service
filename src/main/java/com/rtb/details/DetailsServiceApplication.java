@@ -10,7 +10,6 @@ public class DetailsServiceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DetailsServiceApplication.class, args);
-                System.out.println("Main Method");
 	}
 
 }
